@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+	<html>
+	<head>
+			<meta charset="utf-8">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge">
+			<title>Demo: Tint Color Image Filter</title>
+			<link rel="stylesheet" href="style.css">
+			<script src="processing-1.4.1.min.js"></script>      
+	</head>
+	<body>
+<script type="text/processing" data-processing-target="work">
+/* @pjs preload="image.jpg"; */
+
+PImage sImage; // image to process
+// define color channel to update
+int sCurrentColorChannel;
+final int COLOR_CHANNEL_ALPHA = 0x00;
+final int COLOR_CHANNEL_RED   = 0x01;
+final int COLOR_CHANNEL_GREEN = 0x02;
+final int COLOR_CHANNEL_BLUE  = 0x03;
+
+
+void setup() {
+  sImage = loadImage( "image.jpg" );
+  size( sImage.width, sImage.height );
+  
+  // set initial color
+  sCurrentColorChannel = COLOR_CHANNEL_RED;
+}
+
+
+void draw() {
+  image(sImage, 0, 0);
+  int currentColorValue = 0;
+  
+  // background init
+  background(0xffffffff);
+  
+  // check input color channel mode
+  if( keyPressed ) {
+     if( key == 'a' || key == 'A' ) {
+        sCurrentColorChannel = COLOR_CHANNEL_ALPHA;
+        println("Pressed: A");
+     } else if( key == 'r' || key == 'R' ) {
+        sCurrentColorChannel = COLOR_CHANNEL_RED;
+        println("Pressed: R");
+     } else if( key == 'g' || key == 'G' ) {
+        sCurrentColorChannel = COLOR_CHANNEL_GREEN;
+        println("Pressed: G");
+     } else if( key == 'b' || key == 'B' ) {
+        sCurrentColorChannel = COLOR_CHANNEL_BLUE;
+        println("Pressed: B");
+     }
+  }
+  
+  // detect color value
+  if( mouseX != 0 ) {
+    currentColorValue = (int) ( mouseX * 255 / sImage.width );
+  }
+  
+  // get current color
+  color currentColor = get( mouseX, mouseY );
+  color tintColor = #000000;
+  
+  // update tint color base on mouse position and color channel
+  if( sCurrentColorChannel == COLOR_CHANNEL_RED ) {
+     tintColor = color( currentColorValue, green(currentColor), blue(currentColor) ); 
+     println( "Updated: RED | 0x" + hex(tintColor) );
+  } else if( sCurrentColorChannel == COLOR_CHANNEL_GREEN ) {
+     tintColor = color( red(currentColor), currentColorValue, blue(currentColor) );
+     println( "Updated: GREEN | 0x" + hex(tintColor) ); 
+  } else if( sCurrentColorChannel == COLOR_CHANNEL_BLUE ) {
+     tintColor = color ( red(currentColor), green(currentColor), currentColorValue );
+     println( "Updated: BLUE | 0x" + hex(tintColor) ); 
+  } else if( sCurrentColorChannel == COLOR_CHANNEL_ALPHA ) {
+     tintColor = color ( red(currentColor), green(currentColor), blue(currentColor), currentColorValue );
+     println( "Updated: ALPHA | 0x" + hex(tintColor) ); 
+  }
+  
+  // tint image
+  tint(tintColor);
+  
+  // draw mage
+  image( sImage, 0, 0 );
+}
+
+</script>
+
+    <header>
+      <nav>
+        <div class="block left"><a href="http://pcode.petehouston.com/">p'code</a></div>
+        <div class="block left"><a href="http://pcode.petehouston.com/2013/1224174/tint-color-image-filter-in-processing/">Original Article: Tint Color Image Filter In Processing</a></div>
+        <div class="block right"><a href="http://petehouston.com/">Author: Pete Houston</a></div>
+      </nav>
+    </header>
+
+		<canvas id="work"></canvas>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-40948849-3', 'petehouston.com');
+  ga('send', 'pageview');
+  </script>
+	</body>
+</html>
